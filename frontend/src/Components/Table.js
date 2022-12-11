@@ -1,13 +1,13 @@
 import React, { Fragment } from "react";
 import "./table.css";
-export default function Table({ data }) {
+export default function Table({ data, option }) {
   return (
     <>
       <table>
         <tbody>
           <Fragment>
             <tr>
-              <td class="const">Call</td>
+              <td class="const">{option}</td>
               <td class="var"> {data.option}</td>
             </tr>
             <tr>

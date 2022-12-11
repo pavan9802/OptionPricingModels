@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Form, FloatingLabel, Row, Button, Alert } from "react-bootstrap";
+import {
+  Form,
+  FloatingLabel,
+  Row,
+  Button,
+  Alert,
+  Dropdown,
+  DropdownButton,
+} from "react-bootstrap";
 import LoadingSpinner from "./LoadingSpinner";
 import Table from "./Table";
 export default function Input() {
@@ -9,6 +17,7 @@ export default function Input() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState("");
   const [error, setError] = useState("");
+  const [option, setOption] = useState("Call");
 
   const validateDate = () => {
     var date_regex = /^(0[1-9]|1[0-2])-(0[1-9]|1\d|2\d|3[01])-(19|20)\d{2}$/;
@@ -17,14 +26,16 @@ export default function Input() {
     }
     return true;
   };
-
+  function change(eventKey) {
+    setOption(eventKey);
+  }
   async function onClick() {
     if (stock === "" || stock === "sPrice" || date === "") {
       setError("Please fill in all fields");
       return;
     }
     try {
-      const url = `http://localhost:8000/bs/call/${stock}/${date}/${sPrice}`;
+      const url = `http://localhost:8000/bs/${option}/${stock}/${date}/${sPrice}`;
       setError("");
       setLoading(true);
       const response = await fetch(url);
@@ -114,6 +125,24 @@ export default function Input() {
         </FloatingLabel>
       </Row>
       <Row className="d-flex justify-content-center align-items-center ">
+        <Dropdown onSelect={change}>
+          <Dropdown.Toggle
+            // variant="success"
+            size="lg"
+            id="dropdown-basic"
+            className="w-100 "
+            variant="select"
+          >
+            {option}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item eventKey="Call">Call</Dropdown.Item>
+            <Dropdown.Item eventKey="Put">Put</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </Row>
+
+      <Row className="d-flex justify-content-center align-items-center ">
         {loading || data == null ? (
           <LoadingSpinner />
         ) : (
@@ -126,7 +155,11 @@ export default function Input() {
         {error && <Alert variant="danger">{error}</Alert>}
       </Row>
       <Row className="d-flex justify-content-center align-items-center ">
-        {date && !error ? <Table data={data} /> : console.log("No data")}
+        {date && !error ? (
+          <Table data={data} option={option} />
+        ) : (
+          console.log("No data")
+        )}
       </Row>
     </>
   );

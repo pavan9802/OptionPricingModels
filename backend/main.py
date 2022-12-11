@@ -30,7 +30,7 @@ def read_root(option: str, stock: str, expiry: str, strike_price: str):
     theta = ""
     rho = ""
     price = 0
-    if option == "call":
+    if option == "Call":
         price = round(black_scholes_model_call(stock, expiry, strike_price), 4)
         iv = round(black_scholes_call_IV(
             price, stock, expiry, strike_price), 4)
