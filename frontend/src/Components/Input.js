@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { Form, FloatingLabel, Row, Button } from "react-bootstrap";
-import axios from "axios";
+import LoadingSpinner from "./LoadingSpinner";
+import Table from "./Table";
 export default function Input() {
   const [stock, setStock] = useState("");
   const [sPrice, setSPrice] = useState("");
   const [date, setDate] = useState("");
-  const [price, setPrice] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState("");
+  const [error, setError] = useState("");
 
   const validateDate = () => {
     var date_regex = /^(0[1-9]|1[0-2])-(0[1-9]|1\d|2\d|3[01])-(19|20)\d{2}$/;
@@ -15,16 +18,45 @@ export default function Input() {
     return true;
   };
 
-  const onClick = () => {
-    const url = `http://localhost:8000/bs/${stock}/${date}/${sPrice}`;
-    axios
-      .get(url)
-      .then((res) => setPrice(res.data))
-      .catch(console.log("error"));
-  };
+  async function onClick() {
+    try {
+      const url = `http://localhost:8000/bs/call/${stock}/${date}/${sPrice}`;
+      setError("");
+      setLoading(true);
+      const response = await fetch(url);
+      const json = await response.json();
+      setData(json);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      console.log(err);
+    }
+  }
   return (
     <>
-      <Row>
+      <style type="text/css">
+        {`
+   
+     .btn-primary {
+      background-color: #28A489;
+      border-color: #28A489;
+      color: white;
+     
+      
+    }    
+    .btn-primary:hover{
+      background-color: transparent;
+      color: black;
+    }
+    
+   
+   .progress-bar{
+        background-color: #28A489;
+    }
+    }
+    `}
+      </style>
+      <Row className="d-flex justify-content-center align-items-center ">
         <FloatingLabel
           controlId="floatingInput"
           label="Stock Ticker"
@@ -40,7 +72,7 @@ export default function Input() {
           />
         </FloatingLabel>
       </Row>
-      <Row>
+      <Row className="d-flex justify-content-center align-items-center ">
         <FloatingLabel
           controlId="floatingInput"
           label="Strike Price"
@@ -56,7 +88,7 @@ export default function Input() {
           />
         </FloatingLabel>
       </Row>
-      <Row>
+      <Row className="d-flex justify-content-center align-items-center ">
         <FloatingLabel
           controlId="floatingInput"
           label="Expiration Date"
@@ -72,13 +104,18 @@ export default function Input() {
           />
         </FloatingLabel>
       </Row>
-      <Row>
-        <Button onClick={onClick} class="btn btn-info m-4">
-          Get Price
-        </Button>
+      <Row className="d-flex justify-content-center align-items-center ">
+        {loading || data == null ? (
+          <LoadingSpinner />
+        ) : (
+          <Button onClick={onClick} varient="primary" className="m-4">
+            Get Price
+          </Button>
+        )}
       </Row>
-      {price != "" ? <div>{price.call}</div> : console.log("n")}
-      {price != "" ? <div>{price.put}</div> : console.log("n")}
+      <Row className="d-flex justify-content-center align-items-center ">
+        {date ? <Table data={data} /> : console.log("No data")}
+      </Row>
     </>
   );
 }

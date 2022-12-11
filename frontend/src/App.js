@@ -5,6 +5,8 @@ import Navbar from "./Components/Navbar";
 import Input from "./Components/Input";
 import axios from "axios";
 
+import "bootstrap/dist/css/bootstrap.min.css";
+
 function App() {
   const [temp, setTemp] = useState("Click Here");
 
