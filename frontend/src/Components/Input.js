@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, FloatingLabel, Row, Button } from "react-bootstrap";
+import { Form, FloatingLabel, Row, Button, Alert } from "react-bootstrap";
 import LoadingSpinner from "./LoadingSpinner";
 import Table from "./Table";
 export default function Input() {
@@ -19,6 +19,10 @@ export default function Input() {
   };
 
   async function onClick() {
+    if (stock === "" || stock === "sPrice" || date === "") {
+      setError("Please fill in all fields");
+      return;
+    }
     try {
       const url = `http://localhost:8000/bs/call/${stock}/${date}/${sPrice}`;
       setError("");
@@ -28,6 +32,11 @@ export default function Input() {
       setData(json);
       setLoading(false);
     } catch (err) {
+      if (!validateDate(date)) {
+        setError("Date is invalid is in an invalid Format(MM-DD-YYYY");
+      } else {
+        setError("Invalid ticker or strike price");
+      }
       setLoading(false);
       console.log(err);
     }
@@ -56,7 +65,7 @@ export default function Input() {
     }
     `}
       </style>
-      <Row className="d-flex justify-content-center align-items-center ">
+      <Row className="d-flex justify-content-center align-items-center  ">
         <FloatingLabel
           controlId="floatingInput"
           label="Stock Ticker"
@@ -114,7 +123,10 @@ export default function Input() {
         )}
       </Row>
       <Row className="d-flex justify-content-center align-items-center ">
-        {date ? <Table data={data} /> : console.log("No data")}
+        {error && <Alert variant="danger">{error}</Alert>}
+      </Row>
+      <Row className="d-flex justify-content-center align-items-center ">
+        {date && !error ? <Table data={data} /> : console.log("No data")}
       </Row>
     </>
   );

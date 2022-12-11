@@ -1,14 +1,15 @@
-import { Row, Button, Col } from "react-bootstrap";
+import { Row, Button, Col, ButtonGroup, ToggleButton } from "react-bootstrap";
 import { useState } from "react";
 import React from "react";
 
 export default function Navbar() {
   const [algo, setAlgo] = useState("");
-
-  const onChange = (e) => {
-    setAlgo(e.target.value);
-    console.log(e.target.value);
-  };
+  const [radioValue, setRadioValue] = useState("1");
+  const radios = [
+    { name: "Black Scholes Model", value: "bs" },
+    { name: "Monte Carlo Simulation", value: "mc" },
+    { name: "Binomial Model", value: "bm" },
+  ];
   return (
     <>
       <style type="text/css">
@@ -39,34 +40,27 @@ export default function Navbar() {
     
     `}
       </style>
+
       <Row class="d-flex flex-row justify-content-between align-items-center w-100 ">
-        <Col md={3} className="m-2">
-          <Button
-            value="black_scholes"
-            varient={algo === "black_scholes" ? "secondary" : "primary"}
-            onClick={onChange}
-          >
-            Black-Scholes model
-          </Button>
-        </Col>
-        <Col md={3} className="m-2">
-          <Button
-            value="monte_carlo"
-            varient={algo === "monte_carlo" ? "secondary" : "primary"}
-            onClick={onChange}
-          >
-            Monte Carlo simulation
-          </Button>
-        </Col>
-        <Col md={3} className="m-2">
-          <Button
-            value="binomial"
-            varient={algo === "binomial" ? "secondary" : "primary"}
-            onClick={onChange}
-          >
-            Binomial model
-          </Button>
-        </Col>
+        <ButtonGroup>
+          {radios.map((radio, idx) => (
+            <Col md={3} className="m-4 w-33 ">
+              <ToggleButton
+                key={idx}
+                id={`radio-${idx}`}
+                type="radio"
+                variant={radioValue === radio.value ? "secondary" : "primary"}
+                name="radio"
+                value={radio.value}
+                checked={radioValue === radio.value}
+                onChange={(e) => setRadioValue(e.currentTarget.value)}
+                className="w-100"
+              >
+                {radio.name}
+              </ToggleButton>
+            </Col>
+          ))}
+        </ButtonGroup>
       </Row>
     </>
   );
